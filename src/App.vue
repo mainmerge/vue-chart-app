@@ -5,6 +5,7 @@ import DataChart from './components/DataChart.vue';
 <template>
   <header>
     <h1></h1>
+    <p></p>
   </header>
   <main>
     <DataChart />
@@ -17,9 +18,6 @@ header {
   text-align: center;
 }
 main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 2rem;
+  margin-top: 2rem;
 }
 </style>

@@ -1,52 +1,48 @@
-<template>
-  <div style="position: relative; height: 50vh; width: 90vw; max-width: 800px; margin: auto;">
-    <Bar v-if="loaded" :data="chartData" :options="chartOptions" />
-    <p v-else>Загрузка графика...</p>
-  </div>
-</template>
-
 <script setup>
-
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale} from 'chart.js';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-const mockData = [
-  { name: "Январь", value: 150 },
-  { name: "Февраль", value: 200 },
-  { name: "Март", value: 180 },
-  { name: "Апрель", value: 220 },
-  { name: "Май", value: 300 },
-  { name: "Июнь", value: 250 },
-];
-
-const loaded = ref(false);
 const chartData = ref({});
+const loaded = ref(false);
 const chartOptions = ref({
   responsive: true,
   plugins: {
     title: {
       display: true,
-      text: 'Гистограмма данных по месяцам',
-    },
-  },
+      text: 'Гистограмма данных'
+    }
+  }
 });
 
-onMounted(() => {
-  setTimeout(() => {
+onMounted(async () => {
+  try {
+    const response = await axios.get('https://service-apm.ru/test_json.php');
+    const apiData = response.data.data;
+
     chartData.value = {
-      labels: mockData.map(item => item.name),
+      labels: Object.keys(apiData),
       datasets: [
         {
-          label: 'Значения по месяцам',
-          data: mockData.map(item => item.value),
-          backgroundColor: '#41B883',
+          label: 'Значения',
+          backgroundColor: '#42A5F5',
+          data: Object.values(apiData),
         },
       ],
     };
     loaded.value = true;
-  }, 1000);
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
+
+<template>
+  <div style="width: 600px; height: 400px; margin: auto;">
+    <Bar v-if="loaded" :data="chartData" :options="chartOptions"/>
+    <p v-else>Загрузка графика...</p>
+  </div>
+</template>
